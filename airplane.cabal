@@ -32,3 +32,6 @@ executable airplane
     build-depends:    base ^>=4.14.1.0, split ^>=0.2.3.4
     hs-source-dirs:   app
     default-language: Haskell2010
+
+    ghc-options: -Wno-dodgy-imports
+    default-extensions: ImplicitPrelude StarIsType MonomorphismRestriction TraditionalRecordSyntax EmptyDataDecls ForeignFunctionInterface PatternGuards DoAndIfThenElse RelaxedPolyRec BangPatterns BinaryLiterals ConstrainedClassMethods ConstraintKinds DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable EmptyCase EmptyDataDeriving ExistentialQuantification ExplicitForAll FlexibleContexts FlexibleInstances GADTSyntax GeneralisedNewtypeDeriving HexFloatLiterals ImportQualifiedPost InstanceSigs KindSignatures MultiParamTypeClasses MultiWayIf NamedFieldPuns NamedWildCards NumericUnderscores PolyKinds PostfixOperators RankNTypes ScopedTypeVariables StandaloneDeriving StandaloneKindSignatures TupleSections TypeApplications TypeOperators TypeSynonymInstances
