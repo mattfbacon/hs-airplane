@@ -129,7 +129,12 @@ prompt plane = do
         prompt plane
 
 printHelp :: IO ()
-printHelp = putStrLn $ "Available commands:\n  " ++ L.intercalate "\n  " commands
+printHelp = putStr $ L.unlines
+  [ "Available commands:"
+  , "  help"
+  , "  quit"
+  , "  print [section [row [side seat]]]"
+  ]
 
 updatePlane :: P.Plane -> ActionUpdate -> IO P.Plane
 updatePlane plane SomeChange = do
