@@ -19,7 +19,9 @@ getNumRows :: P.SeatArea -> Int
 getNumRows P.FirstClass = firstClassRows
 getNumRows P.Economy = economyRows
 
-data ActionUpdate = SomeChange
+data ActionUpdate
+  = ResetPlane
+
 data ActionRead
   = PrintPlane
   | PrintEconomy
@@ -41,6 +43,7 @@ commands =
   [ "help"
   , "quit"
   , "print"
+  , "reset"
   ]
 
 ambiguityMessage :: [String] -> String
@@ -134,12 +137,13 @@ printHelp = putStr $ L.unlines
   , "  help"
   , "  quit"
   , "  print [section [row [side seat]]]"
+  , "  reset"
   ]
 
 updatePlane :: P.Plane -> ActionUpdate -> IO P.Plane
-updatePlane plane SomeChange = do
-  putStrLn "pong"
-  pure plane -- unmodified
+updatePlane plane ResetPlane = do
+  putStrLn "Plane was reset."
+  pure $ P.emptyPlane 15 5
 
 printPlaneInfo :: P.Plane -> ActionRead -> IO ()
 printPlaneInfo plane PrintPlane = print plane
