@@ -89,7 +89,7 @@ printAreaAction area (row:args) =
     Nothing -> Right "The row was not a valid integer"
     Just row -> if
       | row > getNumRows area -> Right $ "The row was above " ++ show (getNumRows area)
-      | row < 0 -> Right "The row was not positive"
+      | row < 1 -> Right "The row was not positive"
       | otherwise -> printRowAction area row args
 
 seatAreaMatcher :: String -> M.MatchResult
@@ -151,17 +151,17 @@ printPlaneInfo plane PrintEconomy = putStrLn $ P.showEconomy plane
 printPlaneInfo plane PrintFirstClass = putStrLn $ P.showFirstClass plane
 printPlaneInfo (P.Plane (P.EconomySection econ) (P.FirstClassSection fc)) action =
   case action of
-    PrintEconomyRow row -> print $ econ !! row
-    PrintFirstClassRow row -> print $ fc !! row
+    PrintEconomyRow row -> print $ econ !! (row - 1)
+    PrintFirstClassRow row -> print $ fc !! (row - 1)
     PrintEconomySeat row side seat ->
-      let actualRow = econ !! row
+      let actualRow = econ !! (row - 1)
           actualSide :: P.EconomySide = P.getSide side actualRow
           actualSeat :: P.SeatState = P.getSeat seat actualSide
       in putStrLn $ case actualSeat of
         P.Empty -> "Empty"
         P.Full -> "Full"
     PrintFirstClassSeat row side seat ->
-      let actualRow = fc !! row
+      let actualRow = fc !! (row - 1)
           actualSide :: P.FirstClassSide = P.getSide side actualRow
           actualSeat :: P.SeatState = P.getSeat seat actualSide
       in putStrLn $ case actualSeat of
