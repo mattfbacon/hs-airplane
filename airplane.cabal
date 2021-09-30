@@ -12,7 +12,7 @@ synopsis:           Manages seats on an airplane
 -- bug-reports:
 
 -- The license under which the package is released.
-license:            GPL-3.0-only
+license:            GPL-3.0-or-later
 author:             Matt Fellenz
 maintainer:         mattf53190@gmail.com
 
