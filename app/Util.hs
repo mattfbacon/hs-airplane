@@ -1,4 +1,11 @@
-module Util(showTriple, showPair) where
+module Util
+  ( showTriple,
+    showPair,
+    alphaNum,
+    replaceIdx,
+    titleCase,
+  )
+where
 
 showTriple :: Show a => String -> (a, a, a) -> String
 showTriple delim (a, b, c) = show a ++ delim ++ show b ++ delim ++ show c

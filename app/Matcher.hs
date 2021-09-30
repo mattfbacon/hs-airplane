@@ -1,7 +1,14 @@
-module Matcher(matcher, MatchResult(..)) where
+module Matcher
+  ( matcher,
+    MatchResult (..),
+    matchAll,
+    userMessage,
+  )
+where
 
-import qualified Data.List as L
-import qualified Data.List.Split as S
+import Control.Monad (ap)
+import Data.List qualified as L
+import Util (titleCase)
 
 data MatchResult = NoMatch | Match String | AmbiguousMatch [String]
 

@@ -1,8 +1,8 @@
 module Plane where
 
-import qualified Data.List as L
-
-import TupleShow ( showTriple, showPair )
+import Data.List qualified as L
+import Data.Set qualified as Set
+import Util (alphaNum, replaceIdx, showPair)
 
 letters :: [Char]
 letters = enumFromTo 'a' 'z'

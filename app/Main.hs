@@ -1,12 +1,13 @@
 module Main where
 
-import qualified System.IO as I
-import qualified Data.List as L
-import qualified Data.List.Split as S
-import Text.Read(readMaybe)
-
-import qualified Plane as P
-import qualified Matcher as M
+import Data.List qualified as L
+import Data.List.Split qualified as S
+import Data.Set qualified as Set
+import Matcher qualified as M
+import Plane qualified as P
+import System.IO qualified as I
+import Text.Read (readMaybe)
+import Text.Printf (printf)
 
 initialize :: IO ()
 initialize = do
