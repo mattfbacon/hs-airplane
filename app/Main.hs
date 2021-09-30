@@ -141,9 +141,9 @@ printHelp = putStr $ L.unlines
   ]
 
 updatePlane :: P.Plane -> ActionUpdate -> IO P.Plane
-updatePlane plane ResetPlane = do
+updatePlane _ ResetPlane = do
   putStrLn "Plane was reset."
-  pure $ P.emptyPlane 15 5
+  pure $ P.emptyPlane economyRows firstClassRows
 
 printPlaneInfo :: P.Plane -> ActionRead -> IO ()
 printPlaneInfo plane PrintPlane = print plane
@@ -187,4 +187,4 @@ actionLoop plane = do
 main :: IO ()
 main = do
   initialize
-  actionLoop $ P.emptyPlane 15 5
+  actionLoop $ P.emptyPlane economyRows firstClassRows
