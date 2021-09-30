@@ -6,8 +6,8 @@ import Data.Set qualified as Set
 import Matcher qualified as M
 import Plane qualified as P
 import System.IO qualified as I
-import Text.Read (readMaybe)
 import Text.Printf (printf)
+import Text.Read (readMaybe)
 
 initialize :: IO ()
 initialize = do
@@ -84,45 +84,48 @@ parsePlanePartArea :: String -> [String] -> Either String PlanePart
 parsePlanePartArea area_ args =
   M.userMessage (seatAreaMatcher area_)
     >>= ( \area ->
-        let
-          partArea = PartArea area
-        in
-          case args of
-            [] -> Right partArea
-            row_ : args' ->
-              parsePlanePartRow area row_ args'
-      )
+            let partArea = PartArea area
+             in case args of
+                  [] -> Right partArea
+                  row_ : args' ->
+                    parsePlanePartRow area row_ args'
+        )
 
 parsePlanePartRow :: P.SeatArea -> String -> [String] -> Either String PlanePart
 parsePlanePartRow area row_ args =
   case (readMaybe :: String -> Maybe Int) row_ of
     Just row ->
-      let
-        partRow = PartRow area row
-      in case args of
-        [] -> Right partRow
-        side_ : args' ->
-          parsePlanePartSide area row side_ args'
+      let partRow = PartRow area row
+       in case args of
+            [] -> Right partRow
+            side_ : args' ->
+              parsePlanePartSide area row side_ args'
     Nothing -> Left "Invalid row"
 
 parsePlanePartSide :: P.SeatArea -> Int -> String -> [String] -> Either String PlanePart
 parsePlanePartSide area row side_ args =
-  M.userMessage (sideMatcher side_) >>= (\side ->
-    let
-      partSide = PartSide area row side
-    in case args of
-      [] -> Right partSide
-      seat_ : args' ->
-        (case area of
-          P.Economy -> parsePlanePartEconomySeat
-          P.FirstClass -> parsePlanePartFirstClassSeat) row side seat_ args'
-    )
+  M.userMessage (sideMatcher side_)
+    >>= ( \side ->
+            let partSide = PartSide area row side
+             in case args of
+                  [] -> Right partSide
+                  seat_ : args' ->
+                    ( case area of
+                        P.Economy -> parsePlanePartEconomySeat
+                        P.FirstClass -> parsePlanePartFirstClassSeat
+                    )
+                      row
+                      side
+                      seat_
+                      args'
+        )
 
 parsePlanePartEconomySeat :: Int -> P.SeatSide -> String -> [String] -> Either String PlanePart
 parsePlanePartEconomySeat row side seat_ args =
   case args of
     [] -> M.userMessage (economySeatMatcher seat_) >>= Right . PartEconomySeat row side
     _ -> Left "Too many arguments for plane part"
+
 parsePlanePartFirstClassSeat :: Int -> P.SeatSide -> String -> [String] -> Either String PlanePart
 parsePlanePartFirstClassSeat row side seat_ args =
   case args of
@@ -131,20 +134,20 @@ parsePlanePartFirstClassSeat row side seat_ args =
 
 validatePlanePart :: PlanePart -> Either String PlanePart
 validatePlanePart part =
-  let
-    check_ area row =
-      if | row > getNumRows area -> Just "Row too large"
-         | row < 0 -> Just "Row too small"
-         | otherwise -> Nothing
-    maybeToLeft = maybe (Right part) Left
-    check area row = maybeToLeft $ check_ area row
-  in case part of
-    PartWholePlane -> Right part
-    PartArea _ -> Right part
-    PartRow area row -> check area row
-    PartSide area row _ -> check area row
-    PartEconomySeat row _ _ -> check P.Economy row
-    PartFirstClassSeat row _ _ -> check P.FirstClass row
+  let check_ area row =
+        if
+            | row > getNumRows area -> Just "Row too large"
+            | row < 0 -> Just "Row too small"
+            | otherwise -> Nothing
+      maybeToLeft = maybe (Right part) Left
+      check area row = maybeToLeft $ check_ area row
+   in case part of
+        PartWholePlane -> Right part
+        PartArea _ -> Right part
+        PartRow area row -> check area row
+        PartSide area row _ -> check area row
+        PartEconomySeat row _ _ -> check P.Economy row
+        PartFirstClassSeat row _ _ -> check P.FirstClass row
 
 cmdToAction :: String -> [String] -> Either String Action
 cmdToAction "help" [] = Right $ MetaAction Help
@@ -182,17 +185,18 @@ prompt :: P.Plane -> IO Action
 prompt plane = do
   printPrompt
   isClosed <- I.isEOF
-  if isClosed then pure $ MetaAction Quit
-  else do
-    input <- getLine
-    case input of
-      "" -> prompt plane
-      _ ->
-        case parse input of
-          Right action -> pure action
-          Left str -> do
-            putStrLn str
-            prompt plane
+  if isClosed
+    then pure $ MetaAction Quit
+    else do
+      input <- getLine
+      case input of
+        "" -> prompt plane
+        _ ->
+          case parse input of
+            Right action -> pure action
+            Left str -> do
+              putStrLn str
+              prompt plane
 
 printHelp :: IO ()
 printHelp =
@@ -225,7 +229,8 @@ chooseEconomySide possibleSides = do
                         M.NoMatch _ _ -> do
                           putStr "The side could not be parsed. "
                           chooseEconomySide possibleSides
-                        M.Match side -> -- now we have a row and a side
+                        M.Match side ->
+                          -- now we have a row and a side
                           case L.find (\x -> P.sidesRow x == row && P.sidesSide x == side) possibleSides of
                             Nothing -> do
                               putStr "That side is not present in the possibilities. "
@@ -261,7 +266,8 @@ chooseFirstClassSide possibleSides = do
                         M.NoMatch _ _ -> do
                           putStr "The side could not be parsed. "
                           chooseFirstClassSide possibleSides
-                        M.Match side -> -- now we have a row and a side
+                        M.Match side ->
+                          -- now we have a row and a side
                           case L.find (\x -> P.sidesRow x == row && P.sidesSide x == side) possibleSides of
                             Nothing -> do
                               putStr "That side is not present in the possibilities. "
@@ -325,9 +331,9 @@ updatePlane plane (FindFirstClassSeats numPeople preferences) =
             Just chosenSide -> reserveSide chosenSide numPeople plane
 
 freeSeatsInRow :: P.TwoSided a b => a -> Int
-freeSeatsInRow row
-  = P.numFreeSeats (P.getSide P.LeftSide row)
-  + P.numFreeSeats (P.getSide P.RightSide row)
+freeSeatsInRow row =
+  P.numFreeSeats (P.getSide P.LeftSide row)
+    + P.numFreeSeats (P.getSide P.RightSide row)
 
 printPlaneInfo :: P.Plane -> ActionRead -> IO ()
 printPlaneInfo plane (PrintPlane part) =
@@ -350,20 +356,18 @@ printPlaneInfo plane (PrintPlane part) =
               actualSide :: P.FirstClassSide = P.getSide side actualRow
               actualSeat :: P.SeatState = P.getSeat seat actualSide
            in putStrLn $ P.seatStateHumanReadable actualSeat
-
 printPlaneInfo (P.Plane (P.EconomySection econ) (P.FirstClassSection fc)) PrintSeatStats =
-  let
-    economyTotal = economyRows * P.seatAreaSeats P.Economy * 2
-    fcTotal = firstClassRows * P.seatAreaSeats P.FirstClass * 2
-    economyFree = foldr ((+) . freeSeatsInRow) 0 econ
-    fcFree = foldr ((+) . freeSeatsInRow) 0 fc
-    economyTaken = economyTotal - economyFree
-    fcTaken = fcTotal - fcFree
-    printStatsRow = printf "Economy: Free %d, Taken %d, Total %d\n"
-  in do
-    printStatsRow economyFree economyTaken economyTotal
-    printStatsRow fcFree fcTaken fcTotal
-    printStatsRow (economyFree + fcFree) (economyTaken + fcTaken) (economyTotal + fcTotal)
+  let economyTotal = economyRows * P.seatAreaSeats P.Economy * 2
+      fcTotal = firstClassRows * P.seatAreaSeats P.FirstClass * 2
+      economyFree = foldr ((+) . freeSeatsInRow) 0 econ
+      fcFree = foldr ((+) . freeSeatsInRow) 0 fc
+      economyTaken = economyTotal - economyFree
+      fcTaken = fcTotal - fcFree
+      printStatsRow = printf "Economy: Free %d, Taken %d, Total %d\n"
+   in do
+        printStatsRow economyFree economyTaken economyTotal
+        printStatsRow fcFree fcTaken fcTotal
+        printStatsRow (economyFree + fcFree) (economyTaken + fcTaken) (economyTotal + fcTotal)
 
 actionLoop :: P.Plane -> IO ()
 actionLoop plane = do

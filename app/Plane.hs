@@ -84,7 +84,8 @@ stringToFirstClassSeatColumn _ = error "String can't be converted to FirstClassS
 
 class
   IsSide b =>
-  TwoSided a b | a -> b
+  TwoSided a b
+    | a -> b
   where
   getSide :: SeatSide -> a -> b
   replaceSide :: b -> a -> a
