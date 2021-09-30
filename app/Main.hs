@@ -14,7 +14,10 @@ initialize = do
   putStrLn "Welcome to Airplane Manager"
   putStrLn "Type `help` for possible commands"
 
+economyRows :: Int
 economyRows = 15
+
+firstClassRows :: Int
 firstClassRows = 5
 getNumRows :: P.SeatArea -> Int
 getNumRows P.FirstClass = firstClassRows
